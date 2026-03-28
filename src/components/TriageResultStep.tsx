@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, CheckCircle, ArrowRight, RotateCcw, Activity, Stethoscope, MapPin, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackTriageCompleted, trackDispatchConfirmed, trackMapRendered, buildMapsEmbedUrl } from "@/services/google";
+import { useEffect } from "react";
 import type { TriageResult, SeverityLevel } from "@/types/triage";
 
 interface TriageResultStepProps {
@@ -18,6 +20,16 @@ const severityConfig: Record<SeverityLevel, { color: string; bg: string; border:
 };
 
 const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps) => {
+  useEffect(() => {
+    trackTriageCompleted(result.severity, result.confidence);
+  }, [result.severity, result.confidence]);
+
+  useEffect(() => {
+    if (result.careType !== 'self_care') {
+      trackMapRendered(result.careType);
+    }
+  }, [result.careType]);
+
   const config = severityConfig[result.severity];
   const confidencePercent = Math.round(result.confidence * 100);
 
@@ -114,11 +126,7 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyCKkuu5E1ltq0Y0SGFCRrG3_H1UjIgMOWo&q=${
-                result.careType === 'urgent_care' ? 'urgent+care+near+me' : 
-                result.careType === 'emergency' ? 'emergency+room+near+me' : 
-                'primary+care+clinic+near+me'
-              }`}
+              src={buildMapsEmbedUrl(result.careType)}
             ></iframe>
           </div>
         ) : (
@@ -135,7 +143,10 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
           <RotateCcw className="w-4 h-4 mr-2" /> Redo
         </Button>
         <Button
-          onClick={onConfirm}
+          onClick={() => {
+            trackDispatchConfirmed(result.careType);
+            onConfirm();
+          }}
           className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl py-5 flex-[2] glow-primary font-semibold"
         >
           <CheckCircle className="w-4 h-4 mr-2" /> Confirm & Route

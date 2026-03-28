@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, Camera, FileText, X, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackInputType } from "@/services/google";
 
 interface InputStepProps {
   onSubmit: (data: { voiceTranscript?: string; photos: string[]; pdfText?: string }) => void;
@@ -178,7 +179,12 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
           size="lg"
           aria-label={isProcessing ? "Analyzing inputs with AI..." : "Submit inputs to AI for analysis"}
           disabled={!canSubmit || isProcessing}
-          onClick={() => onSubmit({ voiceTranscript: transcript || undefined, photos, pdfText: pdfText || undefined })}
+          onClick={() => {
+            if (transcript) trackInputType("voice");
+            if (photos.length > 0) trackInputType("photo");
+            if (pdfName) trackInputType("pdf");
+            onSubmit({ voiceTranscript: transcript || undefined, photos, pdfText: pdfText || undefined });
+          }}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg rounded-2xl glow-primary font-semibold disabled:opacity-40"
         >
           {isProcessing ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Analyzing...</> : <>Analyze with AI <ArrowRight className="w-5 h-5 ml-2" /></>}

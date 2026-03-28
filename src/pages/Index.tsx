@@ -7,6 +7,7 @@ import InputStep from "@/components/InputStep";
 import ProcessingStep from "@/components/ProcessingStep";
 import TriageResultStep from "@/components/TriageResultStep";
 import ConfirmedStep from "@/components/ConfirmedStep";
+import { trackTriageStarted } from "@/services/google";
 import type { AppStep, TriageResult, TriageInput } from "@/types/triage";
 
 const Index = () => {
@@ -16,6 +17,7 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleSubmit = async (input: TriageInput) => {
+    trackTriageStarted();
     setIsProcessing(true);
     setStep("processing");
 
