@@ -6,6 +6,13 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+
+# Consume build arguments injected by Google Cloud Build
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
