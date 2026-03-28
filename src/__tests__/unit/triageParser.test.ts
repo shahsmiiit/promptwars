@@ -1,26 +1,28 @@
 import { describe, it, expect } from "vitest";
+import { parseTriageResponse } from "@/services/triage";
 
 describe("Triage Parser", () => {
   it("Valid critical response → assert severity = 'critical'", () => {
-    const res = { severity: "critical", confidence: 0.9 };
-    expect(res.severity).toBe("critical");
+    const result = parseTriageResponse('{"severity": "critical", "confidence": 0.9}');
+    expect(result).toHaveProperty('severity', 'critical');
   });
   it("Valid low response → assert severity = 'low'", () => {
-    const res = { severity: "low", confidence: 0.8 };
-    expect(res.severity).toBe("low");
+    const result = parseTriageResponse('{"severity": "low", "confidence": 0.8}');
+    expect(result).toHaveProperty('severity', 'low');
   });
   it("Missing confidence field → assert fallback = 0.5", () => {
-    const res: any = { severity: "medium" };
-    expect(res.confidence ?? 0.5).toBe(0.5);
+    const result = parseTriageResponse('{"severity": "medium"}');
+    expect(result).toHaveProperty('confidence', 0.5);
   });
   it("Confidence below 0.6 → assert flags includes 'low-confidence'", () => {
-    const res = { severity: "high", confidence: 0.4, flags: ["low-confidence"] };
-    expect(res.flags).toContain("low-confidence");
+    const result = parseTriageResponse('{"severity": "high", "confidence": 0.4}');
+    expect(result).toHaveProperty('flags');
+    if ('flags' in result) {
+      expect(result.flags).toContain('low-confidence');
+    }
   });
   it("Malformed JSON string → assert parser returns error object, never throws", () => {
-    const parse = (str: string) => {
-      try { return JSON.parse(str); } catch { return { error: "Parse Error" }; }
-    };
-    expect(parse("")).toHaveProperty("error");
+    const result = parseTriageResponse("");
+    expect(result).toHaveProperty('error');
   });
 });
