@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/triage-app'
+      - '.'
+      - '--build-arg'
+      - 'VITE_SUPABASE_URL=${_VITE_SUPABASE_URL}'
+      - '--build-arg'
+      - 'VITE_SUPABASE_PUBLISHABLE_KEY=${_VITE_SUPABASE_PUBLISHABLE_KEY}'
+
+substitutions:
+  _VITE_SUPABASE_URL: https://sapvdmqmouucwvjgkviu.supabase.co
+  _VITE_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhcHZkbXFtb3V1Y3d2amdrdml1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzgyMjgsImV4cCI6MjA5MDI1NDIyOH0.8YlsUBQkPw_zzMUkmE_0H-WR4hF-5udhNMYx3Ret0Ds
