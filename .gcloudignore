@@ -1,0 +1,7 @@
+.git/
+node_modules/
+dist/
+.env
+.env.local
+.env.development
+# Notice we are explicitly ALLOWING .env.production by NOT ignoring it!
