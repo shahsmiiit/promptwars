@@ -1,18 +1,14 @@
-import { cn } from "@/lib/utils";
+import React from 'react';
 
-interface SeverityBadgeProps {
-  severity: string;
-  confidence: number;
-}
-
-export function SeverityBadge({ severity, confidence }: SeverityBadgeProps) {
-  const bgClass = severity === 'critical' ? 'bg-red-500' : severity === 'low' ? 'bg-green-500' : 'bg-yellow-500';
-  const lowConfidence = confidence < 0.6;
-
+export function SeverityBadge({ severity, confidence }: { severity: string; confidence: number }) {
+  let bg = 'bg-gray-500';
+  if (severity === 'critical') bg = 'bg-red-500';
+  if (severity === 'low') bg = 'bg-green-500';
+  
   return (
-    <div className={cn("p-2 rounded", bgClass)}>
-      {severity} - {Math.round(confidence * 100)}%
-      {lowConfidence && <span>low-confidence</span>}
+    <div className={bg}>
+      {Math.round(confidence * 100)}%
+      {confidence <= 0.5 && severity === 'high' && <span>low-confidence</span>}
     </div>
   );
 }

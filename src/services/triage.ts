@@ -1,18 +1,13 @@
-export interface ParsedTriageResponse {
-  severity: string;
-  confidence: number;
-  flags: string[];
-}
-
-export function parseTriageResponse(jsonString: string): ParsedTriageResponse | { error: string } {
+export function parseTriageResponse(jsonStr: string) {
   try {
-    const data = JSON.parse(jsonString);
-    return {
-      severity: data.severity || 'unknown',
-      confidence: data.confidence ?? 0.5,
-      flags: data.confidence < 0.6 ? ['low-confidence'] : [],
-    };
-  } catch {
+    const data = JSON.parse(jsonStr);
+    if (data.confidence === undefined) data.confidence = 0.5;
+    if (data.confidence < 0.6) {
+      data.flags = data.flags || [];
+      if (!data.flags.includes('low-confidence')) data.flags.push('low-confidence');
+    }
+    return data;
+  } catch (e) {
     return { error: 'Parse Error' };
   }
 }
