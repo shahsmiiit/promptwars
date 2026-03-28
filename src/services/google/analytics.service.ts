@@ -19,3 +19,7 @@ export function trackDispatchConfirmed(careType: string): void {
 export function trackInputType(type: "voice" | "photo" | "pdf"): void {
   window.gtag?.("event", "input_submitted", { input_type: type });
 }
+
+export function trackMapRendered(careType: string): void {
+  window.gtag?.("event", "map_rendered", { care_type: careType });
+}
