@@ -23,8 +23,9 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       exit={{ opacity: 0 }}
       className="flex flex-col min-h-screen px-5 py-8"
     >
@@ -32,6 +33,8 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
 
       {/* Severity Banner */}
       <motion.div
+        role="alert"
+        aria-live="assertive"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         className={`${config.bg} ${config.border} border rounded-2xl p-5 mb-4`}
@@ -87,15 +90,40 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
         <p className="text-sm text-secondary-foreground">{result.recommendedAction}</p>
       </div>
 
-      {/* Care Routing */}
+      {/* Care Routing & Facility Map */}
       <div className="glass-card p-4 mb-6">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-3">
           <MapPin className="w-4 h-4 text-accent" />
-          <span className="text-sm font-semibold">Care Type</span>
+          <span className="text-sm font-semibold">Care Type & Facility</span>
         </div>
-        <span className={`text-sm font-mono ${config.color}`}>
-          {result.careType.replace('_', ' ').toUpperCase()}
+        <span className={`text-lg font-bold ${config.color} block mb-4 uppercase`}>
+          {result.careType.replace('_', ' ')}
         </span>
+
+        {result.careType === 'emergency' && result.severity === 'critical' ? (
+          <a href="tel:112" className="block w-full text-center bg-red-600 text-white font-bold py-4 rounded-xl text-xl animate-pulse">
+            🚨 CALL 112 IMMEDIATELY
+          </a>
+        ) : result.careType !== 'self_care' ? (
+          <div className="mt-2 rounded-xl overflow-hidden border border-accent/20">
+            <h3 className="text-xs bg-secondary px-3 py-2 text-secondary-foreground font-semibold">Nearest Care Facility</h3>
+            <iframe
+              width="100%"
+              height="200"
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyCKkuu5E1ltq0Y0SGFCRrG3_H1UjIgMOWo&q=${
+                result.careType === 'urgent_care' ? 'urgent+care+near+me' : 
+                result.careType === 'emergency' ? 'emergency+room+near+me' : 
+                'primary+care+clinic+near+me'
+              }`}
+            ></iframe>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Monitor at home. Proceed to a clinic if symptoms worsen.</p>
+        )}
       </div>
 
       {result.additionalNotes && (
@@ -114,8 +142,8 @@ const TriageResultStep = ({ result, onConfirm, onReset }: TriageResultStepProps)
         </Button>
       </div>
 
-      <p className="text-center text-xs text-muted-foreground mt-4">
-        This is an AI assessment. Always consult medical professionals.
+      <p className="text-center text-xs text-muted-foreground mt-4 opacity-70">
+        AI-assisted guidance only. Always consult a medical professional.
       </p>
     </motion.div>
   );
