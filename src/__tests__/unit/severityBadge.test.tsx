@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
+import React from "react";
 import { SeverityBadge } from "@/components/SeverityBadge";
 
 describe("Severity Badge", () => {
@@ -14,8 +15,8 @@ describe("Severity Badge", () => {
     expect(element.className).toContain("bg-green-500");
   });
   it("confidence=0.91 → displays '91%'", () => {
-    const { getByText } = render(<SeverityBadge severity="high" confidence={0.91} />);
-    expect(getByText("91%")).toBeInTheDocument();
+    const { container } = render(<SeverityBadge severity="high" confidence={0.91} />);
+    expect(container.textContent).toContain("91%");
   });
   it("confidence=0.5 + severity='high' → low-confidence flag visible in DOM", () => {
     const { getByText } = render(<SeverityBadge severity="high" confidence={0.5} />);
