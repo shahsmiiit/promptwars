@@ -98,11 +98,15 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
             variant={isRecording ? "destructive" : "secondary"}
             onClick={isRecording ? stopRecording : startRecording}
             className="rounded-xl"
+            aria-label={isRecording ? "Stop recording voice description" : "Start recording voice description"}
+            aria-pressed={isRecording}
           >
             {isRecording ? <><MicOff className="w-4 h-4 mr-1" /> Stop</> : <><Mic className="w-4 h-4 mr-1" /> Record</>}
           </Button>
         </div>
         <textarea
+          aria-label="Voice description text area"
+          role="textbox"
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
           placeholder="Tap record or type what happened..."
@@ -122,7 +126,7 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
           <span className="text-sm font-medium flex items-center gap-2">
             <Camera className="w-4 h-4 text-accent" /> Injury Photos
           </span>
-          <Button size="sm" variant="secondary" onClick={() => photoInputRef.current?.click()} className="rounded-xl">
+          <Button size="sm" variant="secondary" onClick={() => photoInputRef.current?.click()} className="rounded-xl" aria-label="Add injury photos">
             <Camera className="w-4 h-4 mr-1" /> Add
           </Button>
           <input ref={photoInputRef} type="file" accept="image/*" capture="environment" multiple onChange={handlePhoto} className="hidden" />
@@ -133,8 +137,9 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
               <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden">
                 <img src={p} alt={`Injury ${i + 1}`} className="w-full h-full object-cover" />
                 <button
+                  aria-label={`Remove photo ${i + 1}`}
                   onClick={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
-                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-background/80 flex items-center justify-center"
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-background/80 flex items-center justify-center hover:bg-destructive/80 transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -153,7 +158,7 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
             <FileText className="w-4 h-4 text-accent" /> Medical Records
             <span className="text-xs text-muted-foreground">(optional)</span>
           </span>
-          <Button size="sm" variant="secondary" onClick={() => pdfInputRef.current?.click()} className="rounded-xl">
+          <Button size="sm" variant="secondary" onClick={() => pdfInputRef.current?.click()} className="rounded-xl" aria-label="Upload medical records">
             <FileText className="w-4 h-4 mr-1" /> Upload
           </Button>
           <input ref={pdfInputRef} type="file" accept=".pdf,application/pdf" onChange={handlePdf} className="hidden" />
@@ -161,7 +166,7 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
         {pdfName && (
           <div className="flex items-center gap-2 mt-3 text-xs text-accent">
             <FileText className="w-3 h-3" /> {pdfName}
-            <button onClick={() => { setPdfName(null); setPdfText(null); }}>
+            <button aria-label="Remove medical record" onClick={() => { setPdfName(null); setPdfText(null); }} className="hover:opacity-80">
               <X className="w-3 h-3 text-muted-foreground" />
             </button>
           </div>
@@ -171,6 +176,7 @@ const InputStep = ({ onSubmit, isProcessing }: InputStepProps) => {
       <div className="mt-auto">
         <Button
           size="lg"
+          aria-label={isProcessing ? "Analyzing inputs with AI..." : "Submit inputs to AI for analysis"}
           disabled={!canSubmit || isProcessing}
           onClick={() => onSubmit({ voiceTranscript: transcript || undefined, photos, pdfText: pdfText || undefined })}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg rounded-2xl glow-primary font-semibold disabled:opacity-40"
